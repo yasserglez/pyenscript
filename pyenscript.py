@@ -24,17 +24,25 @@ import subprocess
 
 
 class ENScript(object):
-    """ENScript.exe wrapper.
+    """Evernote ENScript.exe executable wrapper.
 
-    Calls the Evernote ENScript.exe executable using the subprocess module.
-    See https://dev.evernote.com/doc/articles/enscript.php for the API
-    documentation.
+    Implements a Python wrapper that calls the Evernote ENScript.exe Windows
+    executable using the subprocess module. It can be used with Wine on
+    GNU/Linux. See https://dev.evernote.com/doc/articles/enscript.php
+    for the API documentation.
     """
 
-    def __init__(self, enscript, username=None, password=None, database=None,
-                 suppress_output=False):
+    def __init__(self, enscript, suppress_output=False, username=None,
+                 password=None, database=None):
+        """Initialize the ENScript.exe wrapper.
+
+        escript must be a string with the path to ENScript.exe (on Windows)
+        or a sequence with Wine in the first position and the ENScript.exe path
+        in the second position (on GNU/Linux). ENScript.exe output will be
+        redirected to /dev/null if suppress_output is set to True.
+        """
         if sys.version_info[0] == 3:
-            string_types = (str, bytes)  # subprocess also checks for bytes
+            string_types = (str, bytes)  # subprocess also checks for bytes.
         else:
             string_types = basestring
         if isinstance(enscript, string_types):
@@ -50,6 +58,7 @@ class ENScript(object):
         self._suppress_output = suppress_output
 
     def _execute_enscript(self, extra_args):
+        # Call the ENScript.exe executable using subprocess.
         args = self._base_args + extra_args
         if self._suppress_output:
             with open(os.devnull, 'w') as devnull:
@@ -59,18 +68,23 @@ class ENScript(object):
 
     def createNote(self, content, notebook, title,
                    tags=None, attachments=None, date=None):
+        """Create a new note."""
         raise NotImplementedError()
 
     def importNotes(self, enex_file, notebook):
+        """Import one or more notes from an Evernote export file (ENEX)."""
         raise NotImplementedError()
 
     def showNotes(self, query='any:'):
+        """Set the current note list view to the results of a query."""
         raise NotImplementedError()
 
     def printNotes(self, query='any:'):
+        """Print a set of notes."""
         raise NotImplementedError()
 
     def exportNotes(self, enex_file, query='any:'):
+        """Export the set of notes to an Evernote export file (ENEX)."""
         try:
             self._execute_enscript(['exportNotes', '/q', query, '/f', enex_file])
         except subprocess.CalledProcessError:
@@ -78,12 +92,15 @@ class ENScript(object):
             pass
 
     def createNotebook(self, notebook, type=None):
+        """Create a new notebook."""
         raise NotImplementedError()
 
     def listNotebooks(self, type=None):
+        """Lists existing notebooks."""
         stdout = self._execute_enscript(['listNotebooks'])
         notebooks = [line.strip() for line in stdout.strip().split('\n')]
         return notebooks
 
     def syncDatabase(self, log_file=None):
+        """Synchronize with the Evernote service."""
         self._execute_enscript(['syncDatabase'])
