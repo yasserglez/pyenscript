@@ -32,14 +32,14 @@ class ENScript(object):
     for the API documentation.
     """
 
-    def __init__(self, enscript, suppress_output=False, username=None,
-                 password=None, database=None):
+    def __init__(self, enscript, silence_stderr=False,
+                 username=None, password=None, database=None):
         """Initialize the ENScript.exe wrapper.
 
         escript must be a string with the path to ENScript.exe (on Windows)
         or a sequence with Wine in the first position and the ENScript.exe path
-        in the second position (on GNU/Linux). ENScript.exe output will be
-        redirected to /dev/null if suppress_output is set to True.
+        in the second position (on GNU/Linux). ENScript.exe's stderr will be
+        redirected to /dev/null if silence_stderr is set to True.
         """
         if sys.version_info[0] == 3:
             string_types = (str, bytes)  # subprocess also checks for bytes.
@@ -55,16 +55,21 @@ class ENScript(object):
             self._base_args.extend(['/p', password])
         if database:
             self._base_args.extend(['/d', database])
-        self._suppress_output = suppress_output
+        self._silence_stderr = silence_stderr
 
     def _execute_enscript(self, extra_args):
         # Call the ENScript.exe executable using subprocess.
-        args = self._base_args + extra_args
-        if self._suppress_output:
-            with open(os.devnull, 'w') as devnull:
-                subprocess.call(args, stdout=devnull, stderr=devnull)
-        else:
-            subprocess.call(args)
+        try:
+            args = self._base_args + extra_args
+            if self._silence_stderr:
+                with open(os.devnull, 'w') as devnull:
+                    output = subprocess.check_output(args, stderr=devnull)
+            else:
+                output = subprocess.check_output(args)
+        except subprocess.CalledProcessError:
+            # Return codes not documented.
+            output = None
+        return output
 
     def createNote(self, content, notebook, title,
                    tags=None, attachments=None, date=None):
@@ -85,11 +90,8 @@ class ENScript(object):
 
     def exportNotes(self, enex_file, query='any:'):
         """Export the set of notes to an Evernote export file (ENEX)."""
-        try:
-            self._execute_enscript(['exportNotes', '/q', query, '/f', enex_file])
-        except subprocess.CalledProcessError:
-            # No results.
-            pass
+        extra_args = ['exportNotes', '/q', query, '/f', enex_file]
+        self._execute_enscript(extra_args)
 
     def createNotebook(self, notebook, type=None):
         """Create a new notebook."""
@@ -97,8 +99,8 @@ class ENScript(object):
 
     def listNotebooks(self, type=None):
         """Lists existing notebooks."""
-        stdout = self._execute_enscript(['listNotebooks'])
-        notebooks = [line.strip() for line in stdout.strip().split('\n')]
+        output = self._execute_enscript(['listNotebooks'])
+        notebooks = [line.strip() for line in output.strip().split('\n')]
         return notebooks
 
     def syncDatabase(self, log_file=None):
