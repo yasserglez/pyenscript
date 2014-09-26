@@ -24,8 +24,11 @@ import subprocess
 class ENScript(object):
     # https://dev.evernote.com/doc/articles/enscript.php
 
-    def __init__(self, enscript):
+    def __init__(self, enscript, username=None, password=None, database=None):
         self._enscript = enscript
+        self._username = username
+        self._password = password
+        self._database = database
 
     def _call_enscript(self, *args):
         args = ('wine', self._enscript) + args
