@@ -70,7 +70,7 @@ class ENScript(object):
     def printNotes(self, query='any:'):
         raise NotImplementedError()
 
-    def exportNotes(self, query='any:', enex_file):
+    def exportNotes(self, enex_file, query='any:'):
         try:
             self._execute_enscript(['exportNotes', '/q', query, '/f', enex_file])
         except subprocess.CalledProcessError:
