@@ -97,9 +97,12 @@ class ENScript(object):
         """Create a new notebook."""
         raise NotImplementedError()
 
-    def listNotebooks(self, type=None):
+    def listNotebooks(self, type_=None):
         """Lists existing notebooks."""
-        output = self._execute_enscript(['listNotebooks'])
+        extra_args = ['listNotebooks']
+        if type_:
+            extra_args.extend(['/t', type_])
+        output = self._execute_enscript(extra_args)
         notebooks = [line.strip() for line in output.strip().split('\n')]
         return notebooks
 
