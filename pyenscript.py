@@ -108,4 +108,7 @@ class ENScript(object):
 
     def syncDatabase(self, log_file=None):
         """Synchronize with the Evernote service."""
-        self._execute_enscript(['syncDatabase'])
+        extra_args = ['syncDatabase']
+        if log_file:
+            extra_args.extend(['/l', log_file])
+        self._execute_enscript(extra_args)
