@@ -57,7 +57,7 @@ class ENScript(object):
             self._base_args.extend(['/d', database])
         self._silence_stderr = silence_stderr
 
-    def _execute_enscript(self, extra_args):
+    def _call_enscript(self, extra_args):
         # Call the ENScript.exe executable using subprocess.
         try:
             args = self._base_args + extra_args
@@ -71,44 +71,44 @@ class ENScript(object):
             output = None
         return output
 
-    def createNote(self, content, notebook, title,
-                   tags=None, attachments=None, date=None):
+    def create_note(self, content, notebook, title,
+                    tags=None, attachments=None, date=None):
         """Create a new note."""
         raise NotImplementedError()
 
-    def importNotes(self, enex_file, notebook):
+    def import_notes(self, enex_file, notebook):
         """Import one or more notes from an Evernote export file (ENEX)."""
         raise NotImplementedError()
 
-    def showNotes(self, query='any:'):
+    def show_notes(self, query='any:'):
         """Set the current note list view to the results of a query."""
         raise NotImplementedError()
 
-    def printNotes(self, query='any:'):
+    def print_notes(self, query='any:'):
         """Print a set of notes."""
         raise NotImplementedError()
 
-    def exportNotes(self, enex_file, query='any:'):
+    def export_notes(self, enex_file, query='any:'):
         """Export the set of notes to an Evernote export file (ENEX)."""
         extra_args = ['exportNotes', '/q', query, '/f', enex_file]
-        self._execute_enscript(extra_args)
+        self._call_enscript(extra_args)
 
-    def createNotebook(self, notebook, type=None):
+    def create_notebook(self, notebook, type=None):
         """Create a new notebook."""
         raise NotImplementedError()
 
-    def listNotebooks(self, type_=None):
+    def list_notebooks(self, type_=None):
         """Lists existing notebooks."""
         extra_args = ['listNotebooks']
         if type_:
             extra_args.extend(['/t', type_])
-        output = self._execute_enscript(extra_args)
+        output = self._call_enscript(extra_args)
         notebooks = [line.strip() for line in output.strip().split('\n')]
         return notebooks
 
-    def syncDatabase(self, log_file=None):
+    def sync_database(self, log_file=None):
         """Synchronize with the Evernote service."""
         extra_args = ['syncDatabase']
         if log_file:
             extra_args.extend(['/l', log_file])
-        self._execute_enscript(extra_args)
+        self._call_enscript(extra_args)
