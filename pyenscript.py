@@ -36,7 +36,7 @@ class ENScript(object):
                  username=None, password=None, database=None):
         """Initialize the ENScript.exe wrapper.
 
-        escript must be a string with the path to ENScript.exe (on Windows)
+        enscript must be a string with the path to ENScript.exe (on Windows)
         or a sequence with Wine in the first position and the ENScript.exe path
         in the second position (on GNU/Linux). ENScript.exe's stderr will be
         redirected to /dev/null if silence_stderr is set to True.
