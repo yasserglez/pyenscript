@@ -92,9 +92,12 @@ class ENScript(object):
         extra_args = ['exportNotes', '/q', query, '/f', enex_file]
         self._call_enscript(extra_args)
 
-    def create_notebook(self, notebook, type=None):
+    def create_notebook(self, notebook, type_=None):
         """Create a new notebook."""
-        raise NotImplementedError()
+        extra_args = ['createNotebook', '/n', notebook]
+        if type_:
+            extra_args.extend(['/t', type_])
+        self._call_enscript(extra_args)
 
     def list_notebooks(self, type_=None):
         """Lists existing notebooks."""
