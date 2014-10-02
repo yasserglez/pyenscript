@@ -37,7 +37,7 @@ class ENScript(object):
 
         enscript must be a string with the path to ENScript.exe (on Windows)
         or a sequence with Wine in the first position and the ENScript.exe path
-        in the second position (on GNU/Linux). ENScript.exe's stderr will be
+        in the second position (on GNU/Linux). The stderr output will be
         redirected to /dev/null if silence_stderr is set to True.
         """
         if sys.version_info[0] == 3:
