@@ -24,12 +24,11 @@ import subprocess
 
 
 class ENScript(object):
-    """Evernote ENScript.exe executable wrapper.
+    """Evernote ENScript.exe wrapper.
 
-    Implements a Python wrapper that calls the Evernote ENScript.exe Windows
-    executable using the subprocess module. It can be used with Wine on
-    GNU/Linux. See https://dev.evernote.com/doc/articles/enscript.php
-    for the API documentation.
+    This class calls the Evernote ENScript.exe executable using the
+    subprocess module. The API mimics the ENScript.exe arguments documented
+    in https://dev.evernote.com/doc/articles/enscript.php.
     """
 
     def __init__(self, enscript, silence_stderr=False,
