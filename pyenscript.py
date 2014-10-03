@@ -85,7 +85,8 @@ class ENScript(object):
 
     def print_notes(self, query='any:'):
         """Print a set of notes."""
-        raise NotImplementedError()
+        extra_args = ['printNotes', '/q', query]
+        self._call_enscript(extra_args)
 
     def export_notes(self, enex_file, query='any:'):
         """Export the set of notes to an Evernote export file (ENEX)."""
