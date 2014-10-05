@@ -81,7 +81,8 @@ class ENScript(object):
 
     def show_notes(self, query='any:'):
         """Set the current note list view to the results of a query."""
-        raise NotImplementedError()
+        extra_args = ['showNotes', '/q', query]
+        self._call_enscript(extra_args)
 
     def print_notes(self, query='any:'):
         """Print a set of notes."""
