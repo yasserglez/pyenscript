@@ -77,7 +77,8 @@ class ENScript(object):
 
     def import_notes(self, enex_file, notebook):
         """Import one or more notes from an Evernote export file (ENEX)."""
-        raise NotImplementedError()
+        extra_args = ['importNotes', '/s', enex_file, '/n', notebook]
+        self._call_enscript(extra_args)
 
     def show_notes(self, query='any:'):
         """Set the current note list view to the results of a query."""
