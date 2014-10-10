@@ -20,6 +20,7 @@ PyENScript: a Python wrapper for the Evernote ENScript.exe executable.
 
 import os
 import sys
+import tempfile
 import subprocess
 
 
@@ -75,8 +76,18 @@ class ENScript(object):
             output = None
         return output
 
-    def create_note(self, filename, notebook, title,
-                    tags=None, attachments=None, creation_date=None):
+    def create_note_from_content(self, content, notebook, title, tags=None,
+                                 attachments=None, date=None):
+        """Create a new note."""
+        f = tempfile.NamedTemporaryFile(delete=False)
+        f.write(content)
+        f.close()  # Close file first so it can be opened on Windows.
+        self.create_note_from_filename(f.name, notebook, title, tags,
+                                       attachments, date)
+        os.unlink(f.name)
+
+    def create_note_from_filename(self, filename, notebook, title, tags=None,
+                                  attachments=None, date=None):
         """Create a new note."""
         extra_args = ['createNote', '/s', filename, '/n', notebook, '/i', title]
         for option, argument in (('/t', tags), ('/a', attachments)):
@@ -86,8 +97,8 @@ class ENScript(object):
                 else:
                     for value in argument:
                         extra_args.extend([option, value])
-        if creation_date:
-            extra_args.extend(['/c', creation_date])
+        if date:
+            extra_args.extend(['/c', date])
         self._call_enscript(extra_args)
 
     def import_notes(self, enex_file, notebook):
