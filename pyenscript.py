@@ -40,11 +40,7 @@ class ENScript(object):
         in the second position (on GNU/Linux). The stderr output will be
         redirected to /dev/null if silence_stderr is set to True.
         """
-        if sys.version_info[0] == 3:
-            string_types = (str, bytes)  # subprocess also checks for bytes.
-        else:
-            string_types = basestring
-        if isinstance(enscript, string_types):
+        if self._is_string(enscript):
             self._base_args = [enscript]
         else:
             self._base_args = list(enscript)
@@ -55,6 +51,15 @@ class ENScript(object):
         if database:
             self._base_args.extend(['/d', database])
         self._silence_stderr = silence_stderr
+
+    @staticmethod
+    def _is_string(value):
+        # Check if value is a string (Python 2 and Python 3 compatible).
+        if sys.version_info[0] == 3:
+            string_types = (str, bytes)  # subprocess also checks for bytes.
+        else:
+            string_types = basestring
+        return isinstance(value, string_types)
 
     def _call_enscript(self, extra_args):
         # Call the ENScript.exe executable using subprocess.
@@ -70,10 +75,20 @@ class ENScript(object):
             output = None
         return output
 
-    def create_note(self, content, notebook, title,
-                    tags=None, attachments=None, date=None):
+    def create_note(self, filename, notebook, title,
+                    tags=None, attachments=None, creation_date=None):
         """Create a new note."""
-        raise NotImplementedError()
+        extra_args = ['createNote', '/s', filename, '/n', notebook, '/i', title]
+        for option, argument in (('/t', tags), ('/a', attachments)):
+            if argument:
+                if self._is_string(argument):
+                    extra_args.extend([option, argument])
+                else:
+                    for value in argument:
+                        extra_args.extend([option, value])
+        if creation_date:
+            extra_args.extend(['/c', creation_date])
+        self._call_enscript(extra_args)
 
     def import_notes(self, enex_file, notebook):
         """Import one or more notes from an Evernote export file (ENEX)."""
