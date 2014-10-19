@@ -17,7 +17,7 @@ try:
         version = subprocess.check_output(git_args, stderr=devnull).strip()
 except subprocess.CalledProcessError:
     # Set statically if git repo not available
-    version = '0.1.0'
+    version = '1.0.0'
 
 with open(os.path.join(src_dir, 'README.txt')) as f:
     long_description = f.read()
