@@ -79,7 +79,7 @@ class ENScript(object):
     def create_note_from_content(self, content, notebook, title, tags=None,
                                  attachments=None, date=None):
         """Create a new note."""
-        f = tempfile.NamedTemporaryFile(delete=False)
+        f = tempfile.NamedTemporaryFile(delete=False, suffix='.txt')
         f.write(content)
         f.close()  # Close file first so it can be opened on Windows.
         self.create_note_from_filename(f.name, notebook, title, tags,
